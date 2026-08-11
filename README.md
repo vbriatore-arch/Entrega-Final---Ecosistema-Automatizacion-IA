@@ -44,5 +44,4 @@ https://airtable.com/appqK3dPeiN113Sy6/shrrSeBjRw7D6B3pm
 Valeria Briatore
 
 Trabajo Final
-Certificación en Automatización de Procesos Empresariales con IA
 Coderhouse
