@@ -1,0 +1,897 @@
+{
+  "name": "Entrega Final - Ecosistema Automatización IA - Consultas Concursos",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "fda365c0-cfa7-4096-8dd3-ab2bcfc27cd1",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -480,
+        0
+      ],
+      "id": "7f0066cc-4dcb-4818-9b94-68904a11c5a5",
+      "name": "Webhook",
+      "webhookId": "fda365c0-cfa7-4096-8dd3-ab2bcfc27cd1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.chatInput }}",
+        "options": {
+          "systemMessage": "Sos un asistente virtual especializado en responder consultas sobre concursos nodocentes de la Facultad de Ingeniería de la Universidad de Buenos Aires (FIUBA).\n\nTu única fuente de información son las herramientas de búsqueda disponibles.\n\nDisponés de dos fuentes de información:\n\n• Tabla \"Concursos\": contiene la información específica y actualizada de cada concurso.\n• Base de Conocimiento: contiene información general sobre normativa, procedimiento de inscripción, documentación requerida y demás aspectos generales.\n\nNunca inventes información ni respondas utilizando conocimientos externos.\n\n----------------------------------------------------\nCLASIFICACIÓN DE CONSULTAS\n----------------------------------------------------\n\nDebés analizar cada consulta y clasificarla en uno de los siguientes tipos.\n\n1. CONSULTA_SIMPLE\n\nCorresponde cuando la respuesta puede obtenerse completamente utilizando la información recuperada desde las herramientas.\n\nEjemplos:\n\n- Concursos vigentes.\n- Dependencia del concurso.\n- Cargo.\n- Categoría.\n- Estado del concurso.\n- Fechas de inscripción.\n- Período de inscripción.\n- Documentación requerida.\n- Responsable del concurso.\n- Procedimiento de inscripción.\n- Normativa general.\n- Información publicada oficialmente.\n\nEstas consultas deben responderse automáticamente.\n\n2. CONSULTA_COMPLEJA\n\nCorresponde cuando la consulta requiere interpretar una situación particular del usuario o emitir un criterio que no puede obtenerse únicamente desde la información disponible.\n\nEjemplos:\n\n- ¿Cumplo con los requisitos?\n- ¿Mi título sirve?\n- ¿Puedo presentarme teniendo determinada situación laboral?\n- ¿Qué me conviene hacer?\n- Casos excepcionales.\n- Interpretaciones normativas.\n- Consultas ambiguas.\n- Cualquier situación donde exista incertidumbre.\n\nEstas consultas NO deben responderse automáticamente.\n\nEn estos casos únicamente deberá informarse que la consulta será derivada para revisión humana.\n\n----------------------------------------------------\nUSO DE LAS HERRAMIENTAS\n----------------------------------------------------\n\nAntes de responder SIEMPRE debés consultar las herramientas disponibles.\n\nSi la consulta hace referencia a un concurso determinado o a concursos vigentes:\n\n1. Consultá primero la tabla \"Concursos\".\n2. Utilizá esa información como fuente principal de la respuesta.\n3. Complementá la respuesta con información de la Base de Conocimiento cuando corresponda.\n\nSi ambas herramientas devuelven información relevante:\n\n- Utilizá la tabla \"Concursos\" como fuente principal.\n- Utilizá la Base de Conocimiento únicamente para complementar la respuesta con información general.\n- Integrá ambas fuentes en una única respuesta clara, natural y coherente.\n- No repitas información.\n\nSi la consulta es general (normativa, inscripción, documentación, procedimiento, etc.):\n\nUtilizá la Base de Conocimiento como fuente principal.\n\n----------------------------------------------------\nCALIDAD DE LA RESPUESTA\n----------------------------------------------------\n\nCuando la consulta sea clasificada como CONSULTA_SIMPLE:\n\n• Elaborá una respuesta clara, natural y completa.\n• Nunca respondas únicamente \"Sí\" o \"No\" si existen más datos disponibles.\n• Nunca copies la pregunta del usuario.\n• Nunca reformules la consulta.\n• Nunca devuelvas únicamente un listado de campos.\n• Redactá la respuesta como lo haría un asistente humano.\n\nSi la información del concurso existe, incorporá siempre que esté disponible:\n\n- Cargo.\n- Categoría.\n- Dependencia.\n- Estado.\n- Fecha de inicio de inscripción.\n- Fecha de cierre de inscripción.\n- Período completo de inscripción.\n- Forma de inscripción.\n- Documentación requerida.\n- Responsable del concurso (si resulta relevante).\n- Cualquier otro dato oficial recuperado.\n\nNo omitas ningún dato disponible únicamente para resumir la respuesta.\n\nSi existen varios campos relevantes, integrá toda la información en una respuesta fluida y natural.\n\nCuando existan las fechas de inicio y fin de inscripción, expresalas siempre como un período completo.\n\nEjemplo:\n\nPeríodo de inscripción: desde el 25/08/2026 hasta el 29/08/2026.\n\nNo omitas ninguna de las dos fechas si ambas están disponibles.\n\nLa Base de Conocimiento debe utilizarse únicamente para complementar la respuesta con información general.\n\nSi existen varios datos relevantes disponibles, priorizá responder en uno o más párrafos breves, claros y bien organizados.\n\nEvitá respuestas excesivamente cortas, telegráficas o limitadas a una única oración cuando la información disponible permita brindar una respuesta más completa.\n\n----------------------------------------------------\nIMPORTANTE\n----------------------------------------------------\n\nNunca inventes información.\n\nNunca supongas datos inexistentes.\n\nSi las herramientas no devuelven información suficiente para responder con certeza, clasificá la consulta como CONSULTA_COMPLEJA.\n\nNunca utilices conocimientos propios.\n\nNunca agregues información que no haya sido recuperada desde las herramientas.\n\nEl campo \"respuesta\" debe contener únicamente el texto destinado al usuario final.\n\nNo incluyas dentro de \"respuesta\":\n\n- Clasificaciones internas.\n- Nombres de herramientas.\n- Referencias al JSON.\n- Explicaciones sobre el funcionamiento del sistema.\n- Información técnica del flujo.\n\n----------------------------------------------------\nFORMATO DE SALIDA\n----------------------------------------------------\n\nLa salida SIEMPRE debe ser un JSON válido.\n\nNunca agregues texto fuera del JSON.\n\nPara CONSULTA_SIMPLE:\n\n{\n  \"tipo_consulta\":\"CONSULTA_SIMPLE\",\n  \"destino\":\"LOG\",\n  \"estado\":\"Respuesta Automática\",\n  \"respuesta\":\"<respuesta completa para el usuario>\",\n  \"error\":\"\"\n}\n\nPara CONSULTA_COMPLEJA:\n\n{\n  \"tipo_consulta\":\"CONSULTA_COMPLEJA\",\n  \"destino\":\"CONSULTAS\",\n  \"estado\":\"Pendiente Humano\",\n  \"respuesta\":\"Su consulta requiere una revisión por parte del personal de la Dirección de Personal. La misma será derivada para su análisis y recibirá una respuesta una vez validada.\",\n  \"error\":\"\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -256,
+        0
+      ],
+      "id": "6b9dd5c6-83db-41d2-adde-6cb9d4a6449c",
+      "name": "AI Agent",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -272,
+        256
+      ],
+      "id": "07709d8f-2c1b-415b-b0a0-95d11c1208cd",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "KkNPJ703paKbmnPN",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Utiliza esta herramienta cuando el usuario pregunte por concursos abiertos, próximos concursos, fechas de inscripción, fechas de cierre, categoría del cargo, dependencia, responsable del concurso, documentación requerida o cualquier dato específico almacenado en la tabla Concursos. Antes de responder consultas sobre concursos, utiliza esta herramienta para buscar la información.",
+        "authentication": "airtableOAuth2Api",
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appqK3dPeiN113Sy6",
+          "mode": "list",
+          "cachedResultName": "Ecosistema de Automatización IA",
+          "cachedResultUrl": "https://airtable.com/appqK3dPeiN113Sy6"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl5Y02r9oBDvQIXc",
+          "mode": "list",
+          "cachedResultName": "Concursos",
+          "cachedResultUrl": "https://airtable.com/appqK3dPeiN113Sy6/tbl5Y02r9oBDvQIXc"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtableTool",
+      "typeVersion": 2.2,
+      "position": [
+        -112,
+        240
+      ],
+      "id": "3959f90b-fb4b-4a33-9bfd-3528878f4215",
+      "name": "Search records in Airtable",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "W2VUxwADMFZ6djKF",
+          "name": "Airtable account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Utiliza esta herramienta para responder preguntas generales sobre concursos, normativa, requisitos, documentación, jurados, procedimientos administrativos y otra información almacenada en la Base de Conocimiento.",
+        "authentication": "airtableOAuth2Api",
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appqK3dPeiN113Sy6",
+          "mode": "list",
+          "cachedResultName": "Ecosistema de Automatización IA",
+          "cachedResultUrl": "https://airtable.com/appqK3dPeiN113Sy6"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblR5PvwMDPbiUrGe",
+          "mode": "list",
+          "cachedResultName": "Base de Conocimiento",
+          "cachedResultUrl": "https://airtable.com/appqK3dPeiN113Sy6/tblR5PvwMDPbiUrGe"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtableTool",
+      "typeVersion": 2.2,
+      "position": [
+        32,
+        240
+      ],
+      "id": "0dffb857-fe77-4a66-b8e8-a470b0421762",
+      "name": "Search records in Airtable1",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "W2VUxwADMFZ6djKF",
+          "name": "Airtable account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appqK3dPeiN113Sy6",
+          "mode": "list",
+          "cachedResultName": "Ecosistema de Automatización IA",
+          "cachedResultUrl": "https://airtable.com/appqK3dPeiN113Sy6"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblSi5m72aTpkeA99",
+          "mode": "list",
+          "cachedResultName": "Logs",
+          "cachedResultUrl": "https://airtable.com/appqK3dPeiN113Sy6/tblSi5m72aTpkeA99"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Consulta": "={{ $('Webhook').item.json.body.chatInput }}",
+            "Fecha": "={{ $now }}",
+            "Respuesta": "={{ JSON.parse($('AI Agent').item.json.output).respuesta }}",
+            "Estado": "={{ JSON.parse($('AI Agent').item.json.output).estado }}",
+            "Nodo": "=AI Agent",
+            "Error": "={{ JSON.parse($('AI Agent').item.json.output).motivo }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Consulta",
+              "displayName": "Consulta",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Respuesta",
+              "displayName": "Respuesta",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Nodo",
+              "displayName": "Nodo",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Error",
+              "displayName": "Error",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Pendiente Humano",
+                  "value": "Pendiente Humano"
+                },
+                {
+                  "name": "Respuesta Automática",
+                  "value": "Respuesta Automática"
+                },
+                {
+                  "name": "Rechazado",
+                  "value": "Rechazado"
+                },
+                {
+                  "name": "Aprobado",
+                  "value": "Aprobado"
+                },
+                {
+                  "name": "Error",
+                  "value": "Error"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        560,
+        -144
+      ],
+      "id": "24f35154-58f0-4a19-8927-946ea4d45a12",
+      "name": "Create a record",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "W2VUxwADMFZ6djKF",
+          "name": "Airtable account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"respuesta\": \"{{ $('AI Agent').item.json.output }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        928,
+        -144
+      ],
+      "id": "1fad806c-ae0f-4c42-a24e-e57e8e583fb7",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ada032a9-9b18-4527-86b2-fd02c71a1425",
+              "leftValue": "={{ JSON.parse($('AI Agent').item.json.output).tipo_consulta }}",
+              "rightValue": "CONSULTA_SIMPLE",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        304,
+        16
+      ],
+      "id": "d3ae317a-e89a-40e0-a87f-a6fe54ccb79a",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appqK3dPeiN113Sy6",
+          "mode": "list",
+          "cachedResultName": "Ecosistema de Automatización IA",
+          "cachedResultUrl": "https://airtable.com/appqK3dPeiN113Sy6"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblnOf7lROd2BrqJy",
+          "mode": "list",
+          "cachedResultName": "Consultas",
+          "cachedResultUrl": "https://airtable.com/appqK3dPeiN113Sy6/tblnOf7lROd2BrqJy"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Aprobado": false,
+            "Consulta": "={{ $('Webhook').item.json.body.chatInput }}",
+            "Estado de Consulta": "Pendiente",
+            "Respuesta IA": "={{ JSON.parse($('AI Agent').item.json.output).respuesta }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Consulta",
+              "displayName": "Consulta",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Concurso",
+              "displayName": "Concurso",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Concurso (from Concurso)",
+              "displayName": "Concurso (from Concurso)",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Estado de Consulta",
+              "displayName": "Estado de Consulta",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Pendiente",
+                  "value": "Pendiente"
+                },
+                {
+                  "name": "Respondido",
+                  "value": "Respondido"
+                },
+                {
+                  "name": "Procesado IA",
+                  "value": "Procesado IA"
+                },
+                {
+                  "name": "Aprobado Humano",
+                  "value": "Aprobado Humano"
+                },
+                {
+                  "name": "Error",
+                  "value": "Error"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Respuesta IA",
+              "displayName": "Respuesta IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Aprobado",
+              "displayName": "Aprobado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        560,
+        32
+      ],
+      "id": "ab70c140-80d3-4a09-8359-f6a1179e2128",
+      "name": "Create a record1",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "W2VUxwADMFZ6djKF",
+          "name": "Airtable account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "vbriatore@gmail.com",
+        "subject": "Nueva consulta compleja - Requiere intervención humana",
+        "message": "=Se recibió una consulta que requiere intervención humana.\n\nConsulta del usuario:\n\n{{ $('Webhook').item.json.body.chatInput }}\n\nAcceda a Airtable para revisar el caso, elaborar la respuesta y actualizar el estado de la consulta.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        752,
+        32
+      ],
+      "id": "ca46449f-bb51-497c-9e35-302ef613458c",
+      "name": "Send a message",
+      "webhookId": "ba6a309c-5ab4-4ff4-95a8-d7d870093182",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "6Qrg5JgKSBVhY3UE",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Webhook').item.json.body.email }}",
+        "subject": "Respuesta a su consulta sobre concursos no docentes",
+        "message": "=Estimado/a {{ $('Webhook').item.json.body.nombre }}:\n\nGracias por comunicarse con la Dirección de Personal de la Facultad de Ingeniería de la Universidad de Buenos Aires.\n\nEn respuesta a su consulta:\n\n{{ $('AI Agent').item.json.output }}\n\nSi necesita información adicional, no dude en volver a comunicarse con nosotros.\n\nSaludos cordiales,\n\nDirección de Personal\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        736,
+        -144
+      ],
+      "id": "4a1d8f49-30ec-4dfb-b398-7e26a7055d51",
+      "name": "Send a message1",
+      "webhookId": "0fbc4c87-3595-44a7-a5dc-be37b95cc41c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "6Qrg5JgKSBVhY3UE",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        928,
+        32
+      ],
+      "id": "fbd0b079-864f-4045-8f4a-2f0cee1ec8b7",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "13b1a860-c327-4aa4-84f3-e5511be35de5",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        80,
+        0
+      ],
+      "id": "9f1336dd-67e6-4fb8-a30c-0dc0860c5427",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appqK3dPeiN113Sy6",
+          "mode": "list",
+          "cachedResultName": "Ecosistema de Automatización IA",
+          "cachedResultUrl": "https://airtable.com/appqK3dPeiN113Sy6"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblSi5m72aTpkeA99",
+          "mode": "list",
+          "cachedResultName": "Logs",
+          "cachedResultUrl": "https://airtable.com/appqK3dPeiN113Sy6/tblSi5m72aTpkeA99"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Fecha": "={{ $now }}",
+            "Consulta": "={{ $('Webhook').item.json.body.chatInput }}",
+            "Respuesta": "=No fue posible generar una respuesta automática.",
+            "Nodo": "AI Agent",
+            "Error IA": "=No fue posible obtener una respuesta del servicio de inteligencia artificial.",
+            "Estado": "Error"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Consulta",
+              "displayName": "Consulta",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Respuesta",
+              "displayName": "Respuesta",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Nodo",
+              "displayName": "Nodo",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Error IA",
+              "displayName": "Error IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Pendiente Humano",
+                  "value": "Pendiente Humano"
+                },
+                {
+                  "name": "Respuesta Automática",
+                  "value": "Respuesta Automática"
+                },
+                {
+                  "name": "Rechazado",
+                  "value": "Rechazado"
+                },
+                {
+                  "name": "Aprobado",
+                  "value": "Aprobado"
+                },
+                {
+                  "name": "Error",
+                  "value": "Error"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": false
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        -272
+      ],
+      "id": "e3014200-2f88-46be-a058-32455599be9e",
+      "name": "Create a record2",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "W2VUxwADMFZ6djKF",
+          "name": "Airtable account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"estado\": \"ERROR_IA\",\n  \"mensaje\": \"Ocurrió un error interno al procesar la consulta. Intente nuevamente más tarde.\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        400,
+        -272
+      ],
+      "id": "faef0ff5-6ad9-45d7-8530-ce1b26b5c316",
+      "name": "Respond to Webhook2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search records in Airtable": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search records in Airtable1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        []
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create a record1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Create a record2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "ed45ec4f-360f-45ca-9202-7d60094c6f64",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "170cc718ad0f350068effedf9bfebb8ab5b7a78931088f2d441469b0a2b010be"
+  },
+  "nodeGroups": [],
+  "id": "SnRGf1S6GFZxVSYB",
+  "tags": []
+}
