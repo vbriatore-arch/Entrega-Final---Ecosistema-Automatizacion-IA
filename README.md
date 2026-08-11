@@ -2,7 +2,7 @@
 
 ## Trabajo Final
 
-Sistema de automatización desarrollado para gestionar consultas sobre concursos nodocentes de la Facultad de Ingeniería de la Universidad de Buenos Aires (FIUBA).
+Sistema de automatización desarrollado para gestionar consultas sobre concursos nodocentes de una Facultad.
 
 El proyecto utiliza n8n como orquestador, Airtable como base de datos y un modelo de Inteligencia Artificial (Groq Llama 3.3 70B) para interpretar consultas y generar respuestas.
 
